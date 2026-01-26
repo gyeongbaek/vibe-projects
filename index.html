@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibe Projects</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">Vibe Coding</div>
+        <h1>Vibe <em>Projects</em></h1>
+        <p class="subtitle">바이브 코딩으로 만든 프로젝트 컬렉션</p>
+      </header>
+
+      <section class="projects">
+        <div class="section-header">
+          <span class="section-title">Projects</span>
+          <span class="project-count">01 Project</span>
+        </div>
+
+        <div class="projects-grid">
+          <!-- ROOMS Project -->
+          <a href="./01-rooms/index.html" class="project-card">
+            <div class="card-preview">
+              <div class="preview-iframe-wrapper">
+                <iframe
+                  class="preview-iframe"
+                  src="./01-rooms/index.html"
+                  loading="lazy"
+                  tabindex="-1"
+                ></iframe>
+              </div>
+              <div class="preview-overlay"></div>
+            </div>
+            <div class="card-content">
+              <div class="card-label">01 — 3D Portfolio</div>
+              <h3 class="card-title">ROOMS</h3>
+              <p class="card-desc">
+                Three.js를 활용한 인터랙티브 3D 포트폴리오. 무한 슬라이더와
+                기하학적 오브젝트 애니메이션.
+              </p>
+              <div class="card-tags">
+                <span class="tag">Three.js</span>
+                <span class="tag">WebGL</span>
+                <span class="tag">Vanilla JS</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="view-link">
+                View Project
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+              <span class="status">Live</span>
+            </div>
+          </a>
+
+          <!-- More projects can be added here -->
+        </div>
+      </section>
+
+      <footer>
+        <p class="footer-text">
+          Built with Vibe Coding ·
+          <a href="https://github.com" target="_blank">GitHub</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
