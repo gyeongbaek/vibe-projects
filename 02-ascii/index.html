@@ -1,0 +1,1418 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASCII Wireframe Designer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #000;
+        color: #d4d4d4;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Left Sidebar */
+      .sidebar-left {
+        width: 220px;
+        background: #0a0a0a;
+        border-right: 1px solid #262626;
+        padding: 16px;
+        overflow-y: auto;
+      }
+
+      .sidebar-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #525252;
+        margin-bottom: 16px;
+      }
+
+      .category {
+        margin-bottom: 20px;
+      }
+
+      .category-title {
+        font-size: 11px;
+        color: #404040;
+        margin-bottom: 8px;
+      }
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+
+      .tool-btn {
+        padding: 8px 6px;
+        font-size: 11px;
+        background: #171717;
+        border: none;
+        border-radius: 4px;
+        color: #a3a3a3;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.15s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tool-btn:hover {
+        background: #262626;
+      }
+
+      .tool-btn.active {
+        background: #fff;
+        color: #000;
+      }
+
+      .tool-icon {
+        margin-right: 4px;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      /* Toolbar */
+      .toolbar {
+        height: 48px;
+        background: #0a0a0a;
+        border-bottom: 1px solid #262626;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 8px;
+      }
+
+      .toolbar-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: #171717;
+        border: none;
+        border-radius: 4px;
+        color: #a3a3a3;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .toolbar-btn:hover {
+        background: #262626;
+      }
+
+      .toolbar-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .toolbar-btn.active {
+        background: #404040;
+      }
+
+      .toolbar-btn.danger {
+        color: #f87171;
+      }
+
+      .toolbar-divider {
+        width: 1px;
+        height: 24px;
+        background: #262626;
+        margin: 0 8px;
+      }
+
+      .toolbar-spacer {
+        flex: 1;
+      }
+
+      /* Canvas Area */
+      .canvas-wrapper {
+        flex: 1;
+        padding: 24px;
+        overflow: auto;
+        background: #0a0a0a;
+      }
+
+      .canvas {
+        position: relative;
+        background: #000;
+        border: 1px solid #262626;
+        margin: 0 auto;
+      }
+
+      .canvas.crosshair {
+        cursor: crosshair;
+      }
+
+      .canvas-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px
+          );
+        background-size: 10px 10px;
+      }
+
+      .canvas-hint {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        font-size: 11px;
+        color: #404040;
+      }
+
+      /* Elements */
+      .element {
+        position: absolute;
+        cursor: move;
+        transition: box-shadow 0.15s;
+      }
+
+      .element.selected {
+        box-shadow: 0 0 0 1px #fff;
+      }
+
+      .element-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .element-input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: none;
+        color: #d4d4d4;
+        font-size: 12px;
+        text-align: center;
+        outline: none;
+        padding: 4px;
+      }
+
+      .element-input::placeholder {
+        color: #404040;
+      }
+
+      .element-resize {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        background: #404040;
+        cursor: se-resize;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      .element:hover .element-resize {
+        opacity: 1;
+      }
+
+      .element-delete {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 18px;
+        height: 18px;
+        background: #404040;
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .element.selected .element-delete {
+        display: flex;
+      }
+
+      /* Element Types */
+      .element.bordered {
+        border: 1px solid #525252;
+      }
+
+      .element.form-field {
+        border: 1px solid #525252;
+        background: #171717;
+      }
+
+      .element.image-box .element-content {
+        border: 1px dashed #525252;
+      }
+
+      .element.image-box .element-content::after {
+        content: "✕";
+        color: #525252;
+        font-size: 24px;
+      }
+
+      .element.avatar .element-content {
+        border: 2px solid #a3a3a3;
+        border-radius: 50%;
+      }
+
+      .element.checkbox .element-content,
+      .element.radio .element-content {
+        border: 1px solid #a3a3a3;
+      }
+
+      .element.radio .element-content {
+        border-radius: 50%;
+      }
+
+      .element.divider .element-content {
+        border-top: 1px solid #525252;
+      }
+
+      .element.progress .element-content {
+        background: #262626;
+        border-radius: 4px;
+        overflow: hidden;
+        justify-content: flex-start;
+      }
+
+      .element.progress .progress-fill {
+        height: 100%;
+        width: 60%;
+        background: #a3a3a3;
+      }
+
+      .element.toggle .element-content {
+        border: 1px solid #525252;
+        border-radius: 12px;
+        padding: 2px;
+        justify-content: flex-start;
+      }
+
+      .element.toggle .toggle-knob {
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 50%;
+      }
+
+      /* Right Sidebar */
+      .sidebar-right {
+        width: 320px;
+        background: #0a0a0a;
+        border-left: 1px solid #262626;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .output-settings {
+        padding: 16px;
+        border-bottom: 1px solid #262626;
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .setting-label {
+        display: block;
+      }
+
+      .setting-label span {
+        font-size: 11px;
+        color: #525252;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .setting-input {
+        width: 100%;
+        padding: 6px 8px;
+        background: #171717;
+        border: 1px solid #262626;
+        border-radius: 4px;
+        color: #d4d4d4;
+        font-size: 12px;
+      }
+
+      .generate-btn {
+        width: 100%;
+        padding: 10px;
+        background: #fff;
+        border: none;
+        border-radius: 4px;
+        color: #000;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .generate-btn:hover {
+        background: #e5e5e5;
+      }
+
+      .output-area {
+        flex: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .output-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #525252;
+      }
+
+      .copy-btn {
+        font-size: 11px;
+        color: #525252;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .copy-btn:hover {
+        color: #fff;
+      }
+
+      .output-pre {
+        flex: 1;
+        background: #000;
+        border: 1px solid #262626;
+        border-radius: 4px;
+        padding: 12px;
+        overflow: auto;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 11px;
+        color: #a3a3a3;
+        white-space: pre;
+        line-height: 1.4;
+      }
+
+      .properties {
+        padding: 16px;
+        border-top: 1px solid #262626;
+      }
+
+      .properties-content {
+        font-size: 11px;
+        color: #525252;
+      }
+
+      .properties-content p {
+        margin-bottom: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Left Sidebar -->
+      <div class="sidebar-left">
+        <div class="sidebar-title">Elements</div>
+        <div id="toolsContainer"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <button class="toolbar-btn" id="undoBtn" disabled>Undo</button>
+          <button class="toolbar-btn" id="redoBtn" disabled>Redo</button>
+          <div class="toolbar-divider"></div>
+          <button class="toolbar-btn" id="gridBtn">Grid</button>
+          <div class="toolbar-divider"></div>
+          <button class="toolbar-btn" id="duplicateBtn" style="display: none">
+            Duplicate
+          </button>
+          <button class="toolbar-btn" id="frontBtn" style="display: none">
+            Front
+          </button>
+          <button class="toolbar-btn" id="backBtn" style="display: none">
+            Back
+          </button>
+          <button
+            class="toolbar-btn danger"
+            id="deleteBtn"
+            style="display: none"
+          >
+            Delete
+          </button>
+          <div class="toolbar-spacer"></div>
+          <button class="toolbar-btn" id="clearBtn">Clear All</button>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-wrapper">
+          <div class="canvas" id="canvas">
+            <div class="canvas-grid" id="canvasGrid"></div>
+            <div class="canvas-hint" id="canvasHint"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="sidebar-right">
+        <div class="output-settings">
+          <div class="sidebar-title">Output Settings</div>
+          <div class="settings-grid">
+            <label class="setting-label">
+              <span>Width</span>
+              <input
+                type="number"
+                class="setting-input"
+                id="charWidth"
+                value="80"
+              />
+            </label>
+            <label class="setting-label">
+              <span>Height</span>
+              <input
+                type="number"
+                class="setting-input"
+                id="charHeight"
+                value="30"
+              />
+            </label>
+          </div>
+          <button class="generate-btn" id="generateBtn">Generate ASCII</button>
+        </div>
+
+        <div class="output-area">
+          <div class="output-header">
+            <span class="output-title">ASCII Output</span>
+            <button class="copy-btn" id="copyBtn">Copy</button>
+          </div>
+          <pre class="output-pre" id="outputPre">// Generate to preview</pre>
+        </div>
+
+        <div class="properties" id="properties" style="display: none">
+          <div class="sidebar-title">Properties</div>
+          <div class="properties-content" id="propertiesContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Constants
+      const GRID_SIZE = 10;
+      const CANVAS_WIDTH = 900;
+      const CANVAS_HEIGHT = 600;
+
+      // Element Types
+      const ELEMENT_TYPES = {
+        container: { label: "Container", icon: "□", category: "Layout" },
+        header: { label: "Header", icon: "▬", category: "Layout" },
+        navbar: { label: "Navbar", icon: "☰", category: "Layout" },
+        sidebar: { label: "Sidebar", icon: "▮", category: "Layout" },
+        card: { label: "Card", icon: "▢", category: "Layout" },
+        modal: { label: "Modal", icon: "⧈", category: "Layout" },
+        divider: { label: "Divider", icon: "—", category: "Layout" },
+        button: { label: "Button", icon: "[ ]", category: "Form" },
+        input: { label: "Input", icon: "[___]", category: "Form" },
+        checkbox: { label: "Checkbox", icon: "☑", category: "Form" },
+        radio: { label: "Radio", icon: "◉", category: "Form" },
+        dropdown: { label: "Dropdown", icon: "▼", category: "Form" },
+        toggle: { label: "Toggle", icon: "◐", category: "Form" },
+        slider: { label: "Slider", icon: "⊶", category: "Form" },
+        search: { label: "Search", icon: "🔍", category: "Form" },
+        text: { label: "Text", icon: "T", category: "Content" },
+        heading: { label: "Heading", icon: "H", category: "Content" },
+        paragraph: { label: "Paragraph", icon: "¶", category: "Content" },
+        link: { label: "Link", icon: "🔗", category: "Content" },
+        image: { label: "Image", icon: "🖼", category: "Content" },
+        avatar: { label: "Avatar", icon: "◯", category: "Content" },
+        icon: { label: "Icon", icon: "✦", category: "Content" },
+        list: { label: "List", icon: "☰", category: "Content" },
+        table: { label: "Table", icon: "⊞", category: "Content" },
+        tabs: { label: "Tabs", icon: "⊟", category: "UI" },
+        tooltip: { label: "Tooltip", icon: "💬", category: "UI" },
+        badge: { label: "Badge", icon: "●", category: "UI" },
+        progress: { label: "Progress", icon: "▓", category: "UI" },
+        close: { label: "Close", icon: "✕", category: "UI" },
+      };
+
+      const ELEMENT_DEFAULTS = {
+        container: { width: 400, height: 300 },
+        header: { width: 400, height: 60 },
+        navbar: { width: 400, height: 50 },
+        sidebar: { width: 150, height: 300 },
+        card: { width: 200, height: 150 },
+        modal: { width: 350, height: 250 },
+        divider: { width: 200, height: 4 },
+        button: { width: 100, height: 36 },
+        input: { width: 200, height: 36 },
+        checkbox: { width: 24, height: 24 },
+        radio: { width: 24, height: 24 },
+        dropdown: { width: 150, height: 36 },
+        toggle: { width: 48, height: 24 },
+        slider: { width: 180, height: 24 },
+        search: { width: 220, height: 36 },
+        text: { width: 120, height: 24 },
+        heading: { width: 200, height: 32 },
+        paragraph: { width: 250, height: 60 },
+        link: { width: 80, height: 24 },
+        image: { width: 150, height: 100 },
+        avatar: { width: 48, height: 48 },
+        icon: { width: 24, height: 24 },
+        list: { width: 180, height: 120 },
+        table: { width: 300, height: 150 },
+        tabs: { width: 300, height: 40 },
+        tooltip: { width: 120, height: 40 },
+        badge: { width: 50, height: 24 },
+        progress: { width: 200, height: 16 },
+        close: { width: 28, height: 28 },
+      };
+
+      // State
+      let elements = [];
+      let selectedId = null;
+      let nextId = 1;
+      let activeTool = null;
+      let showGrid = true;
+      let history = [];
+      let historyIndex = -1;
+      let dragState = null;
+
+      // DOM Elements
+      const canvas = document.getElementById("canvas");
+      const canvasGrid = document.getElementById("canvasGrid");
+      const canvasHint = document.getElementById("canvasHint");
+      const toolsContainer = document.getElementById("toolsContainer");
+      const outputPre = document.getElementById("outputPre");
+      const charWidthInput = document.getElementById("charWidth");
+      const charHeightInput = document.getElementById("charHeight");
+      const properties = document.getElementById("properties");
+      const propertiesContent = document.getElementById("propertiesContent");
+
+      // Initialize
+      function init() {
+        canvas.style.width = CANVAS_WIDTH + "px";
+        canvas.style.height = CANVAS_HEIGHT + "px";
+
+        renderTools();
+        setupEventListeners();
+      }
+
+      function renderTools() {
+        const categories = {};
+        Object.entries(ELEMENT_TYPES).forEach(([type, config]) => {
+          if (!categories[config.category]) {
+            categories[config.category] = [];
+          }
+          categories[config.category].push({ type, ...config });
+        });
+
+        toolsContainer.innerHTML = Object.entries(categories)
+          .map(
+            ([category, tools]) => `
+        <div class="category">
+          <div class="category-title">${category}</div>
+          <div class="tools-grid">
+            ${tools
+              .map(
+                (tool) => `
+              <button class="tool-btn" data-type="${tool.type}">
+                <span class="tool-icon">${tool.icon}</span>${tool.label}
+              </button>
+            `,
+              )
+              .join("")}
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function setupEventListeners() {
+        // Tool buttons
+        toolsContainer.addEventListener("click", (e) => {
+          const btn = e.target.closest(".tool-btn");
+          if (!btn) return;
+
+          const type = btn.dataset.type;
+          setActiveTool(activeTool === type ? null : type);
+        });
+
+        // Canvas
+        canvas.addEventListener("click", handleCanvasClick);
+        canvas.addEventListener("mousedown", handleMouseDown);
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+
+        // Toolbar buttons
+        document.getElementById("undoBtn").addEventListener("click", undo);
+        document.getElementById("redoBtn").addEventListener("click", redo);
+        document
+          .getElementById("gridBtn")
+          .addEventListener("click", toggleGrid);
+        document
+          .getElementById("duplicateBtn")
+          .addEventListener("click", duplicateSelected);
+        document
+          .getElementById("frontBtn")
+          .addEventListener("click", bringToFront);
+        document
+          .getElementById("backBtn")
+          .addEventListener("click", sendToBack);
+        document
+          .getElementById("deleteBtn")
+          .addEventListener("click", deleteSelected);
+        document.getElementById("clearBtn").addEventListener("click", clearAll);
+        document
+          .getElementById("generateBtn")
+          .addEventListener("click", generateASCII);
+        document
+          .getElementById("copyBtn")
+          .addEventListener("click", copyToClipboard);
+
+        // Keyboard shortcuts
+        document.addEventListener("keydown", (e) => {
+          if (e.target.tagName === "INPUT") return;
+
+          if (e.key === "Delete" || e.key === "Backspace") {
+            deleteSelected();
+          } else if (e.key === "Escape") {
+            setActiveTool(null);
+            setSelected(null);
+          } else if (e.ctrlKey && e.key === "z") {
+            e.preventDefault();
+            undo();
+          } else if (e.ctrlKey && e.key === "y") {
+            e.preventDefault();
+            redo();
+          } else if (e.ctrlKey && e.key === "d") {
+            e.preventDefault();
+            duplicateSelected();
+          }
+        });
+      }
+
+      function setActiveTool(type) {
+        activeTool = type;
+
+        document.querySelectorAll(".tool-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.type === type);
+        });
+
+        canvas.classList.toggle("crosshair", !!type);
+        canvasHint.textContent = type
+          ? `Click to place: ${ELEMENT_TYPES[type].label}`
+          : "";
+      }
+
+      function setSelected(id) {
+        selectedId = id;
+
+        document.querySelectorAll(".element").forEach((el) => {
+          el.classList.toggle("selected", el.dataset.id == id);
+        });
+
+        const selectionBtns = [
+          "duplicateBtn",
+          "frontBtn",
+          "backBtn",
+          "deleteBtn",
+        ];
+        selectionBtns.forEach((btnId) => {
+          document.getElementById(btnId).style.display = id ? "" : "none";
+        });
+
+        if (id) {
+          const element = elements.find((e) => e.id === id);
+          properties.style.display = "";
+          propertiesContent.innerHTML = `
+          <p>Type: ${ELEMENT_TYPES[element.type].label}</p>
+          <p>Position: ${element.x}, ${element.y}</p>
+          <p>Size: ${element.width} × ${element.height}</p>
+        `;
+        } else {
+          properties.style.display = "none";
+        }
+      }
+
+      function snapToGrid(value) {
+        return Math.round(value / GRID_SIZE) * GRID_SIZE;
+      }
+
+      function saveToHistory() {
+        history = history.slice(0, historyIndex + 1);
+        history.push(JSON.stringify(elements));
+        historyIndex = history.length - 1;
+        updateHistoryButtons();
+      }
+
+      function updateHistoryButtons() {
+        document.getElementById("undoBtn").disabled = historyIndex <= 0;
+        document.getElementById("redoBtn").disabled =
+          historyIndex >= history.length - 1;
+      }
+
+      function undo() {
+        if (historyIndex > 0) {
+          historyIndex--;
+          elements = JSON.parse(history[historyIndex]);
+          renderElements();
+          setSelected(null);
+          updateHistoryButtons();
+        }
+      }
+
+      function redo() {
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          elements = JSON.parse(history[historyIndex]);
+          renderElements();
+          setSelected(null);
+          updateHistoryButtons();
+        }
+      }
+
+      function handleCanvasClick(e) {
+        if (e.target !== canvas && !e.target.classList.contains("canvas-grid"))
+          return;
+
+        if (!activeTool) {
+          setSelected(null);
+          return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const x = snapToGrid(e.clientX - rect.left);
+        const y = snapToGrid(e.clientY - rect.top);
+        const defaults = ELEMENT_DEFAULTS[activeTool];
+
+        const newElement = {
+          id: nextId++,
+          type: activeTool,
+          x,
+          y,
+          width: defaults.width,
+          height: defaults.height,
+          text: "",
+          zIndex: nextId,
+        };
+
+        elements.push(newElement);
+        saveToHistory();
+        renderElements();
+        setSelected(newElement.id);
+        setActiveTool(null);
+      }
+
+      function handleMouseDown(e) {
+        const elementEl = e.target.closest(".element");
+        if (!elementEl) return;
+
+        const id = parseInt(elementEl.dataset.id);
+        const element = elements.find((el) => el.id === id);
+        if (!element) return;
+
+        e.preventDefault();
+        setSelected(id);
+
+        const rect = canvas.getBoundingClientRect();
+        const isResize = e.target.classList.contains("element-resize");
+
+        dragState = {
+          id,
+          action: isResize ? "resize" : "move",
+          startX: e.clientX - rect.left,
+          startY: e.clientY - rect.top,
+          originalElement: { ...element },
+        };
+      }
+
+      function handleMouseMove(e) {
+        if (!dragState) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        const deltaX = currentX - dragState.startX;
+        const deltaY = currentY - dragState.startY;
+
+        const element = elements.find((el) => el.id === dragState.id);
+        if (!element) return;
+
+        if (dragState.action === "move") {
+          element.x = snapToGrid(
+            Math.max(
+              0,
+              Math.min(
+                CANVAS_WIDTH - element.width,
+                dragState.originalElement.x + deltaX,
+              ),
+            ),
+          );
+          element.y = snapToGrid(
+            Math.max(
+              0,
+              Math.min(
+                CANVAS_HEIGHT - element.height,
+                dragState.originalElement.y + deltaY,
+              ),
+            ),
+          );
+        } else if (dragState.action === "resize") {
+          element.width = snapToGrid(
+            Math.max(20, dragState.originalElement.width + deltaX),
+          );
+          element.height = snapToGrid(
+            Math.max(20, dragState.originalElement.height + deltaY),
+          );
+        }
+
+        renderElements();
+        updateProperties();
+      }
+
+      function handleMouseUp() {
+        if (dragState) {
+          saveToHistory();
+          dragState = null;
+        }
+      }
+
+      function updateProperties() {
+        if (!selectedId) return;
+        const element = elements.find((e) => e.id === selectedId);
+        if (!element) return;
+
+        propertiesContent.innerHTML = `
+        <p>Type: ${ELEMENT_TYPES[element.type].label}</p>
+        <p>Position: ${element.x}, ${element.y}</p>
+        <p>Size: ${element.width} × ${element.height}</p>
+      `;
+      }
+
+      function renderElements() {
+        // Remove old elements
+        document.querySelectorAll(".element").forEach((el) => el.remove());
+
+        // Sort by zIndex
+        const sorted = [...elements].sort((a, b) => a.zIndex - b.zIndex);
+
+        sorted.forEach((element) => {
+          const el = document.createElement("div");
+          el.className = "element";
+          el.dataset.id = element.id;
+
+          // Add type-specific classes
+          if (
+            [
+              "container",
+              "card",
+              "modal",
+              "header",
+              "navbar",
+              "sidebar",
+              "table",
+            ].includes(element.type)
+          ) {
+            el.classList.add("bordered");
+          }
+          if (["input", "dropdown", "search"].includes(element.type)) {
+            el.classList.add("form-field");
+          }
+          if (element.type === "image") el.classList.add("image-box");
+          if (element.type === "avatar") el.classList.add("avatar");
+          if (element.type === "checkbox") el.classList.add("checkbox");
+          if (element.type === "radio") el.classList.add("radio");
+          if (element.type === "divider") el.classList.add("divider");
+          if (element.type === "progress") el.classList.add("progress");
+          if (element.type === "toggle") el.classList.add("toggle");
+          if (element.type === "button") el.classList.add("bordered");
+
+          el.style.cssText = `
+          left: ${element.x}px;
+          top: ${element.y}px;
+          width: ${element.width}px;
+          height: ${element.height}px;
+          z-index: ${element.zIndex};
+        `;
+
+          if (element.id === selectedId) {
+            el.classList.add("selected");
+          }
+
+          // Content
+          let contentHTML = '<div class="element-content">';
+          if (element.type === "progress") {
+            contentHTML += '<div class="progress-fill"></div>';
+          } else if (element.type === "toggle") {
+            contentHTML += '<div class="toggle-knob"></div>';
+          }
+          contentHTML += "</div>";
+
+          // Input for text
+          if (
+            ![
+              "image",
+              "avatar",
+              "checkbox",
+              "radio",
+              "divider",
+              "progress",
+              "toggle",
+            ].includes(element.type)
+          ) {
+            contentHTML += `<input type="text" class="element-input" value="${element.text}" placeholder="${ELEMENT_TYPES[element.type].label}">`;
+          }
+
+          // Resize handle
+          contentHTML += '<div class="element-resize"></div>';
+
+          // Delete button
+          contentHTML += '<button class="element-delete">×</button>';
+
+          el.innerHTML = contentHTML;
+
+          // Event listeners
+          const input = el.querySelector(".element-input");
+          if (input) {
+            input.addEventListener("input", (e) => {
+              element.text = e.target.value;
+            });
+            input.addEventListener("mousedown", (e) => e.stopPropagation());
+          }
+
+          const deleteBtn = el.querySelector(".element-delete");
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteElement(element.id);
+          });
+
+          canvas.appendChild(el);
+        });
+      }
+
+      function deleteElement(id) {
+        elements = elements.filter((el) => el.id !== id);
+        saveToHistory();
+        renderElements();
+        if (selectedId === id) setSelected(null);
+      }
+
+      function deleteSelected() {
+        if (selectedId) deleteElement(selectedId);
+      }
+
+      function duplicateSelected() {
+        if (!selectedId) return;
+        const element = elements.find((e) => e.id === selectedId);
+        if (!element) return;
+
+        const newElement = {
+          ...element,
+          id: nextId++,
+          x: element.x + 20,
+          y: element.y + 20,
+          zIndex: nextId,
+        };
+
+        elements.push(newElement);
+        saveToHistory();
+        renderElements();
+        setSelected(newElement.id);
+      }
+
+      function bringToFront() {
+        if (!selectedId) return;
+        const maxZ = Math.max(...elements.map((e) => e.zIndex));
+        const element = elements.find((e) => e.id === selectedId);
+        if (element) {
+          element.zIndex = maxZ + 1;
+          renderElements();
+        }
+      }
+
+      function sendToBack() {
+        if (!selectedId) return;
+        const minZ = Math.min(...elements.map((e) => e.zIndex));
+        const element = elements.find((e) => e.id === selectedId);
+        if (element) {
+          element.zIndex = minZ - 1;
+          renderElements();
+        }
+      }
+
+      function toggleGrid() {
+        showGrid = !showGrid;
+        canvasGrid.style.display = showGrid ? "" : "none";
+        document.getElementById("gridBtn").classList.toggle("active", showGrid);
+      }
+
+      function clearAll() {
+        if (elements.length === 0) return;
+        elements = [];
+        saveToHistory();
+        renderElements();
+        setSelected(null);
+      }
+
+      function generateASCII() {
+        const charWidth = parseInt(charWidthInput.value) || 80;
+        const charHeight = parseInt(charHeightInput.value) || 30;
+
+        const grid = Array(charHeight)
+          .fill(null)
+          .map(() => Array(charWidth).fill(" "));
+
+        const sorted = [...elements].sort((a, b) => a.zIndex - b.zIndex);
+
+        const drawBox = (startCol, startRow, boxWidth, boxHeight) => {
+          const endCol = Math.min(charWidth - 1, startCol + boxWidth - 1);
+          const endRow = Math.min(charHeight - 1, startRow + boxHeight - 1);
+
+          for (let col = startCol; col <= endCol; col++) {
+            if (col >= 0 && col < charWidth) {
+              if (startRow >= 0 && startRow < charHeight)
+                grid[startRow][col] = "-";
+              if (endRow >= 0 && endRow < charHeight) grid[endRow][col] = "-";
+            }
+          }
+          for (let row = startRow; row <= endRow; row++) {
+            if (row >= 0 && row < charHeight) {
+              if (startCol >= 0 && startCol < charWidth)
+                grid[row][startCol] = "|";
+              if (endCol >= 0 && endCol < charWidth) grid[row][endCol] = "|";
+            }
+          }
+          if (
+            startRow >= 0 &&
+            startRow < charHeight &&
+            startCol >= 0 &&
+            startCol < charWidth
+          )
+            grid[startRow][startCol] = "+";
+          if (
+            startRow >= 0 &&
+            startRow < charHeight &&
+            endCol >= 0 &&
+            endCol < charWidth
+          )
+            grid[startRow][endCol] = "+";
+          if (
+            endRow >= 0 &&
+            endRow < charHeight &&
+            startCol >= 0 &&
+            startCol < charWidth
+          )
+            grid[endRow][startCol] = "+";
+          if (
+            endRow >= 0 &&
+            endRow < charHeight &&
+            endCol >= 0 &&
+            endCol < charWidth
+          )
+            grid[endRow][endCol] = "+";
+        };
+
+        const drawText = (text, startCol, startRow, maxWidth) => {
+          const truncated = text.slice(0, maxWidth);
+          for (let i = 0; i < truncated.length; i++) {
+            const col = startCol + i;
+            if (
+              col >= 0 &&
+              col < charWidth &&
+              startRow >= 0 &&
+              startRow < charHeight
+            ) {
+              grid[startRow][col] = truncated[i];
+            }
+          }
+        };
+
+        const drawLine = (startCol, row, length, char = "-") => {
+          for (let i = 0; i < length; i++) {
+            const col = startCol + i;
+            if (col >= 0 && col < charWidth && row >= 0 && row < charHeight) {
+              grid[row][col] = char;
+            }
+          }
+        };
+
+        sorted.forEach((element) => {
+          const startCol = Math.floor((element.x / CANVAS_WIDTH) * charWidth);
+          const startRow = Math.floor((element.y / CANVAS_HEIGHT) * charHeight);
+          const boxWidth = Math.max(
+            3,
+            Math.floor((element.width / CANVAS_WIDTH) * charWidth),
+          );
+          const boxHeight = Math.max(
+            2,
+            Math.floor((element.height / CANVAS_HEIGHT) * charHeight),
+          );
+          const centerRow = startRow + Math.floor(boxHeight / 2);
+          const text = element.text || ELEMENT_TYPES[element.type]?.label || "";
+
+          switch (element.type) {
+            case "container":
+            case "card":
+            case "modal":
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+              if (element.text) {
+                drawText(
+                  element.text,
+                  startCol + 2,
+                  startRow + 1,
+                  boxWidth - 4,
+                );
+              }
+              break;
+
+            case "header":
+            case "navbar":
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+              drawText(
+                text || "≡  Logo          Menu  Menu  Menu",
+                startCol + 2,
+                centerRow,
+                boxWidth - 4,
+              );
+              break;
+
+            case "sidebar":
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+              drawText("├ Item 1", startCol + 1, startRow + 2, boxWidth - 2);
+              drawText("├ Item 2", startCol + 1, startRow + 3, boxWidth - 2);
+              drawText("└ Item 3", startCol + 1, startRow + 4, boxWidth - 2);
+              break;
+
+            case "button":
+              drawText(
+                `[ ${text || "Button"} ]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "input":
+              drawText(
+                `[${text || "_".repeat(Math.max(1, boxWidth - 2))}]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "checkbox":
+              drawText(text ? "[x]" : "[ ]", startCol, centerRow, 3);
+              break;
+
+            case "radio":
+              drawText(text ? "(*)" : "( )", startCol, centerRow, 3);
+              break;
+
+            case "dropdown":
+              drawText(
+                `[${text || "Select"} ▼]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "image":
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+              const imgCenterCol = startCol + Math.floor(boxWidth / 2);
+              const imgCenterRow = startRow + Math.floor(boxHeight / 2);
+              if (
+                imgCenterRow >= 0 &&
+                imgCenterRow < charHeight &&
+                imgCenterCol >= 0 &&
+                imgCenterCol < charWidth
+              ) {
+                grid[imgCenterRow][imgCenterCol] = "X";
+              }
+              break;
+
+            case "avatar":
+              drawText("(O)", startCol, centerRow, 3);
+              break;
+
+            case "icon":
+              drawText("[*]", startCol, centerRow, 3);
+              break;
+
+            case "text":
+            case "paragraph":
+              drawText(
+                text || "Text content...",
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "heading":
+              drawText(`# ${text || "Heading"}`, startCol, centerRow, boxWidth);
+              break;
+
+            case "link":
+              drawText(`[${text || "Link"}]`, startCol, centerRow, boxWidth);
+              break;
+
+            case "divider":
+              drawLine(startCol, centerRow, boxWidth, "─");
+              break;
+
+            case "table":
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+              drawLine(startCol + 1, startRow + 2, boxWidth - 2, "-");
+              drawText(
+                "Col1 | Col2 | Col3",
+                startCol + 1,
+                startRow + 1,
+                boxWidth - 2,
+              );
+              drawText(
+                "Data | Data | Data",
+                startCol + 1,
+                startRow + 3,
+                boxWidth - 2,
+              );
+              break;
+
+            case "list":
+              drawText("• Item 1", startCol, startRow, boxWidth);
+              drawText("• Item 2", startCol, startRow + 1, boxWidth);
+              drawText("• Item 3", startCol, startRow + 2, boxWidth);
+              break;
+
+            case "tabs":
+              drawText("[Tab1] [Tab2] [Tab3]", startCol, centerRow, boxWidth);
+              drawLine(startCol, centerRow + 1, boxWidth, "─");
+              break;
+
+            case "tooltip":
+              drawText(
+                `┌${"─".repeat(Math.max(0, boxWidth - 2))}┐`,
+                startCol,
+                startRow,
+                boxWidth,
+              );
+              drawText(
+                `│ ${text || "Tooltip"} │`,
+                startCol,
+                startRow + 1,
+                boxWidth,
+              );
+              drawText(
+                `└${"─".repeat(Math.max(0, boxWidth - 2))}┘`,
+                startCol,
+                startRow + 2,
+                boxWidth,
+              );
+              break;
+
+            case "badge":
+              drawText(`(${text || "99"})`, startCol, centerRow, boxWidth);
+              break;
+
+            case "progress":
+              const filled = Math.floor(boxWidth * 0.6);
+              drawText(
+                `[${"█".repeat(filled)}${"░".repeat(Math.max(0, boxWidth - filled - 2))}]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "slider":
+              drawText(
+                `[──●${"─".repeat(Math.max(0, boxWidth - 6))}]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "toggle":
+              drawText(text ? "[●──]" : "[──●]", startCol, centerRow, 5);
+              break;
+
+            case "search":
+              drawText(
+                `[🔍 ${text || "Search..."} ]`,
+                startCol,
+                centerRow,
+                boxWidth,
+              );
+              break;
+
+            case "close":
+              drawText("[x]", startCol, centerRow, 3);
+              break;
+
+            default:
+              drawBox(startCol, startRow, boxWidth, boxHeight);
+          }
+        });
+
+        const result = grid.map((row) => row.join("")).join("\n");
+        outputPre.textContent = result;
+      }
+
+      async function copyToClipboard() {
+        try {
+          await navigator.clipboard.writeText(outputPre.textContent);
+        } catch (err) {
+          console.error("Failed to copy:", err);
+        }
+      }
+
+      // Initialize
+      init();
+    </script>
+  </body>
+</html>
