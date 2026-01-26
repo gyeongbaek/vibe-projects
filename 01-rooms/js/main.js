@@ -110,6 +110,12 @@ let currentIndex = 0;
 let isTransitioning = false;
 let currentPosition = 0; // 실제 씬 위치 (무한 슬라이더용)
 const ROOM_GAP = 15;
+const TABLET_BREAKPOINT = 768;
+
+// 반응형 mesh 오프셋 계산
+function getMeshOffset() {
+  return window.innerWidth <= TABLET_BREAKPOINT ? 0 : 2.5;
+}
 
 // Three.js Setup
 const container = document.getElementById("canvas-container");
@@ -161,6 +167,7 @@ function createRoomGroup(room, typeIndex) {
   const group = new THREE.Group();
 
   const geometry = createRoomGeometry(typeIndex);
+  const meshOffset = getMeshOffset();
 
   const material = new THREE.MeshStandardMaterial({
     color: room.color,
@@ -169,7 +176,7 @@ function createRoomGroup(room, typeIndex) {
   });
 
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 2.5;
+  mesh.position.x = meshOffset;
   group.add(mesh);
 
   const wireframeMaterial = new THREE.MeshBasicMaterial({
@@ -204,7 +211,7 @@ function createRoomGroup(room, typeIndex) {
   });
 
   const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-  particles.position.x = 2.5;
+  particles.position.x = meshOffset;
   group.add(particles);
 
   return { group, mesh, wireframe, particles };
@@ -457,8 +464,18 @@ document.addEventListener("keydown", (e) => {
 });
 
 // Resize handler
+function updateMeshPositions() {
+  const meshOffset = getMeshOffset();
+  roomGroups.forEach((room) => {
+    room.mesh.position.x = meshOffset;
+    room.wireframe.position.x = meshOffset;
+    room.particles.position.x = meshOffset;
+  });
+}
+
 window.addEventListener("resize", () => {
   camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(container.clientWidth, container.clientHeight);
+  updateMeshPositions();
 });
