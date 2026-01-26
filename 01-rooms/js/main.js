@@ -3,11 +3,9 @@ import * as THREE from "three";
 // Room configurations
 const rooms = [
   {
-    name: "Development",
     label: "Room 01",
     titleHtml: "Develop<em>ment</em>",
     color: 0xe8ff47,
-    bgColor: 0x0d0d0d,
     items: [
       {
         year: "2024",
@@ -36,11 +34,9 @@ const rooms = [
     ],
   },
   {
-    name: "Design",
     label: "Room 02",
     titleHtml: "Des<em>ign</em>",
     color: 0xff6b9d,
-    bgColor: 0x0d0d0d,
     items: [
       {
         year: "2024",
@@ -63,11 +59,9 @@ const rooms = [
     ],
   },
   {
-    name: "Projects",
     label: "Room 03",
     titleHtml: "Pro<em>jects</em>",
     color: 0x47e8ff,
-    bgColor: 0x0d0d0d,
     items: [
       {
         year: "2024",
@@ -84,11 +78,9 @@ const rooms = [
     ],
   },
   {
-    name: "About",
     label: "Room 04",
     titleHtml: "Ab<em>out</em>",
     color: 0xffa347,
-    bgColor: 0x0d0d0d,
     items: [
       {
         year: "2020-",
