@@ -6,31 +6,33 @@ $ARGUMENTS 폴더를 확인하고 README 파일을 작성합니다.
 ## 포함할 내용
 
 - 프로젝트 개요
-- 배포 링크
-- 메인 화면 GIF (assets 폴더 내 위치)
+- 배포 링크 (헤딩 없이 개요 바로 아래)
+- 메인 화면 GIF (헤딩 없이 배포 링크 바로 아래, assets 폴더 내 위치)
 - 주요 기능 및 특징
 - 사용된 기술 스택
 - 설치 및 실행 방법
 - 제작 기간 및 일자
+
+> 헤딩 위에는 <br/> 태그를 추가하여 가독성을 높입니다.
 
 ## GIF 캡처 방법
 
 Playwright를 사용하여 GIF를 캡처합니다. Three.js/WebGL 렌더링을 위해 `headless: false` 옵션이 필수입니다.
 
 ```javascript
-const { chromium } = require('playwright');
+const { chromium } = require("playwright");
 
 (async () => {
   const browser = await chromium.launch({
     headless: false,
-    args: ['--window-position=-2000,-2000']  // 화면 밖으로 이동
+    args: ["--window-position=-2000,-2000"], // 화면 밖으로 이동
   });
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
-    recordVideo: { dir: '/tmp/videos/', size: { width: 1280, height: 800 } }
+    recordVideo: { dir: "/tmp/videos/", size: { width: 1280, height: 800 } },
   });
   const page = await context.newPage();
-  await page.goto('배포URL');
+  await page.goto("배포URL");
   await page.waitForTimeout(5000);
   await context.close();
   await browser.close();
