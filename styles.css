@@ -88,6 +88,11 @@ h1 em {
     color: var(--text-secondary);
 }
 
+.section-divider {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
 .project-count {
     font-size: 12px;
     color: var(--text-secondary);
@@ -99,21 +104,51 @@ h1 em {
     gap: 12px;
 }
 
-.sort-select {
-    padding: 8px 12px;
-    font-size: 12px;
+/* Sort Toggle */
+.sort-toggle {
+    display: flex;
+    position: relative;
     background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-primary);
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s ease;
+    padding: 4px;
+    border-radius: 8px;
 }
 
-.sort-select:hover,
-.sort-select:focus {
-    border-color: var(--accent);
+.sort-toggle::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: var(--bg-card);
+    border-radius: 6px;
+    transition: transform 0.25s ease;
+    z-index: 0;
+}
+
+.sort-toggle.right::before {
+    transform: translateX(100%);
+}
+
+.sort-btn {
+    position: relative;
+    padding: 6px 16px;
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+.sort-btn:hover {
+    color: var(--text-primary);
+}
+
+.sort-btn.active {
+    color: var(--accent);
 }
 
 /* Projects Grid */
@@ -331,8 +366,12 @@ footer {
         width: 100%;
     }
 
-    .sort-select {
+    .sort-toggle {
         width: 100%;
+    }
+
+    .sort-btn {
+        flex: 1;
     }
 
     .projects-grid {

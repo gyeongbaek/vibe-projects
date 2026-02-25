@@ -20,14 +20,14 @@
         <div class="section-header">
           <div class="section-left">
             <span class="section-title">Projects</span>
+            <span class="section-divider">·</span>
             <span class="project-count"></span>
           </div>
           <div class="section-right">
-            <select id="sortSelect" class="sort-select">
-              <option value="newest">최신순</option>
-              <option value="number">넘버링순</option>
-              <option value="oldest">오래된순</option>
-            </select>
+            <div class="sort-toggle">
+              <button class="sort-btn active" data-value="newest">최신 순</button>
+              <button class="sort-btn" data-value="number">번호 순</button>
+            </div>
           </div>
         </div>
 
@@ -125,9 +125,23 @@
         countEl.textContent = `${String(projects.length).padStart(2, "0")} Project${projects.length > 1 ? "s" : ""}`;
       }
 
-      // Sort
-      document.getElementById("sortSelect").addEventListener("change", (e) => {
-        renderProjects(e.target.value);
+      // Sort Toggle
+      const sortToggle = document.querySelector(".sort-toggle");
+      const sortBtns = document.querySelectorAll(".sort-btn");
+
+      sortBtns.forEach((btn, index) => {
+        btn.addEventListener("click", () => {
+          sortBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          if (index === 0) {
+            sortToggle.classList.remove("right");
+          } else {
+            sortToggle.classList.add("right");
+          }
+
+          renderProjects(btn.dataset.value);
+        });
       });
 
       // Init
