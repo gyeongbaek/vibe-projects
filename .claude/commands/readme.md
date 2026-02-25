@@ -18,6 +18,7 @@ $ARGUMENTS 폴더를 확인하고 README 파일을 작성합니다.
 ## GIF 캡처 방법
 
 Playwright를 사용하여 GIF를 캡처합니다. Three.js/WebGL 렌더링을 위해 `headless: false` 옵션이 필수입니다.
+assets/screeshot.gif로 저장하며, 이 외에 파일은 생성되더라도 제거합니다.
 
 ```javascript
 const { chromium } = require("playwright");

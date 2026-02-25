@@ -3,46 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>단단 - 뜨개 단 카운터</title>
+    <title>간단 | 간단하고 단순한 카운터</title>
 
     <!-- SEO Meta Tags -->
     <meta
       name="description"
-      content="뜨개질하는 손, 세는 건 단단에게. 클릭 한 번으로 단과 코를 세는 뜨개질 전용 카운터. 반복 기능과 소리 피드백으로 작품에만 집중하세요."
+      content="간단하고 단순한 카운터. 클릭 한 번으로 숫자를 세세요. 반복 기능과 소리 피드백을 지원합니다."
     />
     <meta
       name="keywords"
-      content="뜨개질, 단세기, 코세기, 뜨개질 카운터, 니팅 카운터, 대바늘, 코바늘, knitting counter, crochet counter, row counter"
+      content="카운터, 숫자 세기, 클릭 카운터, 간단한 카운터, simple counter, click counter"
     />
-    <meta name="author" content="단단" />
+    <meta name="author" content="gyeongbaek" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="단단" />
+    <meta name="apple-mobile-web-app-title" content="간단" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="단단 - 뜨개질이 편해지는 카운터" />
+    <meta property="og:title" content="간단 | 간단하고 단순한 카운터" />
     <meta
       property="og:description"
-      content="한 코 한 코, 놓치지 않게. 뜨개질 전용 단 세기 카운터로 작품에만 집중하세요."
+      content="간단하고 단순한 카운터. 클릭 한 번으로 숫자를 세세요."
     />
     <meta property="og:locale" content="ko_KR" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="단단 - 뜨개질이 편해지는 카운터" />
+    <meta name="twitter:title" content="간단 | 간단하고 단순한 카운터" />
     <meta
       name="twitter:description"
-      content="한 코 한 코, 놓치지 않게. 뜨개질 전용 단 세기 카운터로 작품에만 집중하세요."
+      content="간단하고 단순한 카운터. 클릭 한 번으로 숫자를 세세요."
     />
 
     <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <div id="app" class="container">
-      <!-- 상단 컨트롤 바 -->
+      <!-- 상단 링크 -->
+      <div class="header">
+        <a
+          href="https://vibe.gyeongbaek.dev/"
+          target="_blank"
+          rel="noopener"
+          class="icon-link"
+          aria-label="포트폴리오"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </a>
+        <a
+          href="https://github.com/gyeongbaek/vibe-projects/tree/main/03-counter"
+          target="_blank"
+          rel="noopener"
+          class="icon-link"
+          aria-label="GitHub"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+            />
+            <path d="M9 18c-4.51 2-5-2-7-2" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- 메인 카운터 영역 -->
+      <div class="counter-area">
+        <div id="counter" class="counter-number">1</div>
+        <div id="loopCount" class="loop-count"></div>
+        <p class="hint-text">클릭 또는 스페이스바로 카운트</p>
+      </div>
+
+      <!-- 하단 컨트롤 바 -->
       <div class="controls">
         <button id="darkModeBtn" class="icon-btn" aria-label="다크모드 전환">
           <svg
@@ -128,7 +185,7 @@
           class="loop-input hidden"
           min="1"
           value=""
-          placeholder="반복 횟수"
+          placeholder="반복"
         />
 
         <button id="loopBtn" class="icon-btn" aria-label="루프 설정">
@@ -168,17 +225,6 @@
             <path d="M3 3v5h5" />
           </svg>
         </button>
-      </div>
-
-      <!-- 메인 카운터 영역 -->
-      <div class="counter-area">
-        <div id="counter" class="counter-number">1</div>
-        <div id="loopCount" class="loop-count"></div>
-      </div>
-
-      <!-- 하단 설명 텍스트 -->
-      <div class="footer">
-        <p class="hint-text">클릭 또는 스페이스바로 카운트</p>
       </div>
     </div>
 

@@ -47,14 +47,34 @@ body {
   flex-direction: column;
   cursor: pointer;
   user-select: none;
-  overflow: hidden;
 }
 
-/* Controls */
+/* Header - 우측 상단 링크 */
+.header {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-color);
+  transition: opacity 0.2s;
+}
+
+.icon-link:hover {
+  opacity: 0.6;
+}
+
+/* Controls - 가운데 하단 */
 .controls {
   padding: 1.5rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
 }
@@ -98,14 +118,14 @@ body {
 
 /* Loop input */
 .loop-input {
-  width: 5rem;
+  width: 4rem;
   padding: 0.25rem 0.5rem;
   text-align: center;
   border: none;
   border-bottom: 2px solid var(--border-color);
   background: transparent;
   color: var(--text-color);
-  font-size: 1rem;
+  font-size: 0.875rem;
   outline: none;
   transition: border-color 0.2s;
 }
@@ -146,15 +166,11 @@ body {
   }
 }
 
-/* Footer */
-.footer {
-  padding: 1.5rem;
-  text-align: center;
-}
-
 .hint-text {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
+  margin-top: 2rem;
+  opacity: 0.6;
 }
 
 /* Remove number input spinners */
