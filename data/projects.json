@@ -1,0 +1,20 @@
+[
+  {
+    "id": "01-rooms",
+    "number": "01",
+    "title": "ROOMS",
+    "category": "3D Portfolio",
+    "desc": "Three.js를 활용한 인터랙티브 3D 포트폴리오. 무한 슬라이더와 기하학적 오브젝트 애니메이션.",
+    "tags": ["Three.js", "WebGL", "Vanilla JS"],
+    "date": "2025-01-15"
+  },
+  {
+    "id": "03-counter",
+    "number": "03",
+    "title": "간단",
+    "category": "Utility",
+    "desc": "간단하고 단순한 카운터. 클릭 한 번으로 숫자를 세세요. 반복 기능과 소리 피드백을 지원합니다.",
+    "tags": ["Vanilla JS"],
+    "date": "2025-02-20"
+  }
+]
