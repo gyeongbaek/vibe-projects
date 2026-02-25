@@ -132,7 +132,8 @@ h1 em {
     transition: all 0.3s ease;
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 .project-card:hover {
@@ -172,12 +173,23 @@ h1 em {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
     z-index: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    align-items: flex-end;
     padding: 16px;
+}
+
+.project-card:hover .preview-overlay {
+    background: linear-gradient(to bottom, rgba(232, 255, 71, 0.05) 0%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
 }
 
 .card-tags {
@@ -189,14 +201,12 @@ h1 em {
 .tag {
     font-size: 10px;
     padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);
+    background: var(--bg-secondary);
     border-radius: 20px;
-    color: #ffffff;
-    font-weight: 500;
+    color: var(--text-secondary);
 }
 
-.card-title-area {
+.card-title-row {
     display: flex;
     align-items: baseline;
     gap: 8px;
@@ -210,10 +220,10 @@ h1 em {
 }
 
 .card-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
     letter-spacing: -0.5px;
+    color: #ffffff;
 }
 
 .card-divider {
@@ -228,25 +238,42 @@ h1 em {
     font-weight: 500;
 }
 
-.card-content {
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-}
-
 .card-desc {
     font-size: 12px;
     color: var(--text-secondary);
     line-height: 1.6;
-    flex: 1;
 }
 
 .card-date {
     font-size: 11px;
     color: var(--text-secondary);
-    white-space: nowrap;
+    margin-top: auto;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.view-link {
+    font-size: 12px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.view-link svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+
+.project-card:hover .view-link svg {
+    transform: translateX(4px);
 }
 
 /* Footer */
@@ -313,20 +340,12 @@ footer {
     }
 
     .card-preview {
-        height: 180px;
+        height: 140px;
     }
 
     .preview-iframe-wrapper {
         width: 500%;
         height: 500%;
         transform: scale(0.2);
-    }
-
-    .card-title-area {
-        gap: 6px;
-    }
-
-    .card-title {
-        font-size: 18px;
     }
 }

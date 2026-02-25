@@ -11,7 +11,9 @@
       <header>
         <div class="logo">Vibe Coding</div>
         <h1>Vibe <em>Projects</em></h1>
-        <p class="subtitle">바이브 코딩으로 만든 프로젝트 컬렉션</p>
+        <p class="subtitle">
+          아이디어를 24시간 안에 현실로 만드는 프로젝트 컬렉션
+        </p>
       </header>
 
       <section class="projects">
@@ -33,14 +35,17 @@
       </section>
 
       <footer>
-        <span class="footer-copyright">© 2026. gyeongbaek All rights reserved.</span>
+        <span class="footer-copyright"
+          >© 2026. gyeongbaek All rights reserved.</span
+        >
         <span class="footer-divider">|</span>
         <a
           href="https://github.com/gyeongbaek/vibe-projects"
           target="_blank"
           rel="noopener"
           class="footer-link"
-        >GitHub</a>
+          >GitHub</a
+        >
       </footer>
     </div>
 
@@ -49,17 +54,17 @@
 
       async function loadProjects() {
         try {
-          const response = await fetch('./data/projects.json');
+          const response = await fetch("./data/projects.json");
           projects = await response.json();
-          renderProjects('newest');
+          renderProjects("newest");
         } catch (error) {
-          console.error('Failed to load projects:', error);
+          console.error("Failed to load projects:", error);
         }
       }
 
       function formatDate(dateStr) {
         const date = new Date(dateStr);
-        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`;
+        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}`;
       }
 
       function createProjectCard(project) {
@@ -75,10 +80,7 @@
                 ></iframe>
               </div>
               <div class="preview-overlay">
-                <div class="card-tags">
-                  ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-                <div class="card-title-area">
+                <div class="card-title-row">
                   <span class="card-number">${project.number}</span>
                   <h3 class="card-title">${project.title}</h3>
                   <span class="card-divider">|</span>
@@ -87,33 +89,44 @@
               </div>
             </div>
             <div class="card-content">
+              <div class="card-tags">
+                ${project.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
+              </div>
               <p class="card-desc">${project.desc}</p>
               <span class="card-date">${formatDate(project.date)}</span>
+            </div>
+            <div class="card-footer">
+              <span class="view-link">
+                View Project
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
             </div>
           </a>
         `;
       }
 
-      function renderProjects(sortType = 'newest') {
-        const grid = document.getElementById('projectsGrid');
-        const countEl = document.querySelector('.project-count');
+      function renderProjects(sortType = "newest") {
+        const grid = document.getElementById("projectsGrid");
+        const countEl = document.querySelector(".project-count");
 
         let sorted = [...projects];
 
-        if (sortType === 'newest') {
+        if (sortType === "newest") {
           sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (sortType === 'oldest') {
+        } else if (sortType === "oldest") {
           sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
-        } else if (sortType === 'number') {
+        } else if (sortType === "number") {
           sorted.sort((a, b) => parseInt(a.number) - parseInt(b.number));
         }
 
-        grid.innerHTML = sorted.map(createProjectCard).join('');
-        countEl.textContent = `${String(projects.length).padStart(2, '0')} Project${projects.length > 1 ? 's' : ''}`;
+        grid.innerHTML = sorted.map(createProjectCard).join("");
+        countEl.textContent = `${String(projects.length).padStart(2, "0")} Project${projects.length > 1 ? "s" : ""}`;
       }
 
       // Sort
-      document.getElementById('sortSelect').addEventListener('change', (e) => {
+      document.getElementById("sortSelect").addEventListener("change", (e) => {
         renderProjects(e.target.value);
       });
 
