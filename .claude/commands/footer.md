@@ -12,3 +12,9 @@ footer의 형태는 다음과 같이 제공합니다.
 | 간단한 설명 | [포폴 백링크] [깃허브 작업 폴더 링크]|
 | © 2026. gyeongbaek All rights reserved. |
 +------------------+------------------+
+
+- 포폴 백링크, 깃허브 작업 폴더 링크는 간단한 아이콘으로 제공됩니다.
+- footer의 스타일은 각 서비스에 맞춰 적용합니다.
+
+- 포폴 백링크: https://vibe.gyeongbaek.dev/
+- 깃허브 작업 폴더 링크: https://github.com/gyeongbaek/vibe-projects/tree/main/$ARGUMENTS
