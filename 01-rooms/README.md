@@ -1,10 +1,9 @@
-# ROOMS - 3D Interactive Portfolio
+# ROOMS | 3D Interactive Portfolio
 
 Three.js 기반의 인터랙티브 3D 포트폴리오 웹사이트입니다.
-<br/>
 4개의 테마별 Room을 무한 슬라이더 형태로 탐색하며, 각 Room마다 다른 3D 오브젝트와 프로젝트 목록을 확인할 수 있습니다.
 
-[ROOMS Portfolio](https://vibe.gyeongbaek.dev/01-rooms/)
+[ROOMS 배포 페이지](https://vibe.gyeongbaek.dev/01-rooms/)
 
 ![ROOMS 메인 화면](./assets/screenshot.gif)
 
@@ -16,6 +15,7 @@ Three.js 기반의 인터랙티브 3D 포트폴리오 웹사이트입니다.
 - **무한 슬라이더**: 끊김 없는 순환 네비게이션
 - **인터랙티브 3D 오브젝트**: 카테고리별로 다른 형태의 3D 메시 (Box, Icosahedron, Octahedron, TorusKnot)
 - **동적 콘텐츠**: Room 전환 시 프로젝트 목록 자동 업데이트
+- **다양한 입력 지원**: 버튼, 키보드 (←/→), 터치 스와이프, 마우스 드래그
 
 <br/>
 
@@ -26,7 +26,7 @@ Three.js 기반의 인터랙티브 3D 포트폴리오 웹사이트입니다.
 | 3D Graphics | Three.js                              |
 | Language    | Vanilla JavaScript (ES Modules)       |
 | Markup      | HTML                                  |
-| Styling     | CSS                                   |
+| Styling     | CSS (CSS Variables)                   |
 | Fonts       | Google Fonts (Instrument Serif, Syne) |
 
 <br/>
